@@ -6,4 +6,4 @@ RUN chmod +x ./install.sh \
 	&& mkdir /mnt/uwsgi
 RUN ./install.sh
 EXPOSE 5000/tcp
-CMD python app.py
+CMD "uwsgi --ini ./uwsgi.ini  --http 0.0.0.0:5000"
