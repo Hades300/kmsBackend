@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+
+  vlmcsd:
+    image: mikolatero/vlmcsd
+    ports: 
+      - "1688:1688"
+    volumes:
+      - "./logs:/mnt/"
+    command: "/vlmcsd -D -d -t 3  -v -l /mnt/logs"
+
+  kmsbackend:
+    image: kmsbackend
+    build: 
+      context: .
+    ports:
+      - "2333:5000"
+    volumes:
+      - "./logs:/mnt/"
+      - "./uwsgi/:/mnt/uwsgi/"
+    links:
+      - vlmcsd
+
+
+
+

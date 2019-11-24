@@ -1,0 +1,5 @@
+通过“管理员运行”命令提示符，可以执行以下命令用于KMS激活
+slmgr.vbs -upk #执行原有安装密钥的清除(若系统为未激活状态可以省略)
+slmgr /ipk XXXXX-XXXXX-XXXXX-XXXXX-XXXXX #安装对应版本的GVLK密钥
+slmgr /skms kms.domain.com #KMS服务器的域名或者内部IP
+slmgr /ato #执行KMS激活操作
