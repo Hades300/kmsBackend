@@ -1,0 +1,4 @@
+FROM mikolatero/vlmcsd
+WORKDIR /
+COPY observer.sh /
+CMD sh -c "(/observer.sh &) && (/vlmcsd -D -d -t 3  -v -l /mnt/log/logs)"

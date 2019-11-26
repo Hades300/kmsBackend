@@ -1,23 +1,27 @@
-version: '3'
+version: '3.7'
 
 services:
 
   vlmcsd:
-    image: mikolatero/vlmcsd
+    image: vlmcsd
+    build: 
+      context: .
+      dockerfile: Dockerfile-vlmcsd
     ports: 
       - "1688:1688"
+    init: true
     volumes:
-      - "./logs:/mnt/"
-    command: "/vlmcsd -D -d -t 3  -v -l /mnt/logs"
+      - "./logs:/mnt/log/"
+    command: sh -c "(/observer.sh &) && /vlmcsd -D -d -t 3  -v -l /mnt/log/logs "
 
   kmsbackend:
     image: kmsbackend
     build: 
       context: .
     ports:
-      - "2333:5000"
+      - "5000:5000"
     volumes:
-      - "./logs:/mnt/"
+      - "./logs:/mnt/log/"
       - "./uwsgi/:/mnt/uwsgi/"
     links:
       - vlmcsd

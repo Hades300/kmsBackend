@@ -3,7 +3,7 @@ WORKDIR /usr/local/kmsBackend
 COPY * /usr/local/kmsBackend/
 CMD /bin/bash
 RUN chmod +x ./install.sh \
-	&& mkdir /mnt/uwsgi
+	&& mkdir /mnt/uwsgi && mkdir /mnt/log
 RUN ./install.sh
 EXPOSE 5000/tcp
-CMD "uwsgi --ini ./uwsgi.ini  --http 0.0.0.0:5000"
+CMD uwsgi --ini ./uwsgi.ini  --http 0.0.0.0:5000
