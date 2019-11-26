@@ -81,6 +81,7 @@ def log():
         data = items.readlines()
         for i in range(len(data)):
             data[i] = json.loads(data[i])
+        os.system("rm /mnt/log/logs")
         return jsonify(data)
 
     else:
