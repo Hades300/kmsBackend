@@ -1,7 +1,9 @@
-from flask import Flask,request,session,jsonify
+from flask import Flask,request,session,jsonify,url_for,send_from_directory
 import os,json
-import utils
+import utils,threading,time
 
+global output
+output = False
 BASEDIR="./config"
 COMMANDS=['start','stop','restart']
 
@@ -60,11 +62,12 @@ def content(part):
 def control():
     if login_check():
         data = request.get_json()
-        if data['action'] not in COMMANDS:
+        if not data:
+            return jsonify(status=False,message="action required")
+        if data.get('action') not in COMMANDS:
             return jsonify(status=False,message="commmad not allowed")
         else:
-            # TODO : 阻塞一下也可,设置一下超时的时间和callback
-            # docker start id \\ docker stop \\ docker kill && docker run
+            os.system("touch /mnt/log/"+data['action'])
             return jsonify(status=True,message=data['action']+' successfully')
     else:
         return jsonify(status=False, message="login required")
@@ -74,7 +77,7 @@ def control():
 def log():
     if login_check():
         utils.logParser()
-        items = os.popen("tail -n10 /mnt/parsedLogs")
+        items = os.popen("tail -n10 /mnt/log/parsedLogs")
         data = items.readlines()
         for i in range(len(data)):
             data[i] = json.loads(data[i])
@@ -85,12 +88,25 @@ def log():
 
 @app.route("/status")
 def status():
-    output = os.system("./scripts/vlmcs_check vlmcsd")
-    if output == 0:
-        return jsonify(status=True)
-    else:
-        return jsonify(status=False)
+    check = threading.Thread(target=task,args=("./scripts/vlmcs_check vlmcsd",))
+    check.start()
+    time.sleep(0.1)
+    return jsonify(status=output)
+
+@app.route("/favicon.ico")
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
+
+def task(cmd=None):
+    global output
+    if cmd:
+        if os.system(cmd) == 0:
+            output = True
+        else:
+            output = False
 
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0")
+

@@ -28,9 +28,15 @@ class config:
         with open(os.path.join(self.basedir,self.files[name]),'w+') as f:
             f.write(content)
 
+
+
+
+
+
+
 def logParser():
     #数据获取
-    with open("/mnt/logs") as f:
+    with open("/mnt/log/logs") as f:
         data = f.read()
 
     #正则匹配
@@ -39,7 +45,7 @@ def logParser():
     for  i in range(len(data)):
         time = data[i][0]
         ip = data[i][2]
-        tempLogs = data[i][1].split("\n\n")
+        tempLogs = data[i][1].split("\n")
         logRes = ""
         for i  in range(len(tempLogs)):
             if tempLogs[i]:                     #split后第一个是空的
@@ -51,7 +57,7 @@ def logParser():
         res.append(dict(time=time,ip=ip,request=logRes))
 
     # json格式化后写入 注意加上换行符 方便按条读取
-    with open("/mnt/parsedLogs","a+") as f:
+    with open("/mnt/log/parsedLogs","a+") as f:
         for item in res:
             f.write(json.dumps(item)+"\n")
 
